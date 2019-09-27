@@ -1,0 +1,39 @@
+version: '3.7'
+
+services:
+  db:
+    build: 
+        context: .
+        target: img_db
+#    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports: 
+      - '3306:3306'
+    networks:
+      - backend
+    environment:
+         MYSQL_DATABASE: 'db'
+         MYSQL_USER: 'user'
+         MYSQL_PASSWORD: 'password'
+         MYSQL_ROOT_PASSWORD: 'root'
+#    volumes: 
+#      - .:/code
+
+  web:
+    build: 
+        context: .
+        target: img_pt
+    networks: 
+      - backend
+    expose:
+      - 8080
+    command : python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - "8080:8000"
+    depends_on:
+      - db
+networks:
+  backend:
+    driver: bridge  
